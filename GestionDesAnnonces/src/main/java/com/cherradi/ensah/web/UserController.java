@@ -25,40 +25,51 @@ public class UserController extends HttpServlet{
 	}
 	
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(req, resp);
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		HttpSession session = req.getSession();
+		if (session.getAttribute("user") != null) {
+			this.getServletContext().getRequestDispatcher("/views/home.jsp").forward(req, resp);
+		}
 	}
 	
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String actionName = req.getServletPath();
-		// System.out.println(actionName);
 		switch (actionName) {
-			case "/login.php":
-				checkLogin(req, resp);
-				break;
+		case "/login.php":
+			checkLogin(req, resp);
+			break;
+		case "logout.php":
+			checkLogout(req, resp);
+			break;
 		}
 	}
 
 	private void checkLogin(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
 		String login = req.getParameter("login");
 		String password = req.getParameter("password");
 		String nextPage="/views/login.jsp";
 		String msg = "";
-		// System.out.println(login+"---"+password);
-		List<User> users = dao.getAllUsers();
-		for (User user : users) {
-			if(login.equals(user.getEmail()) && password.equals(user.getMdp())) {
-		        HttpSession session=req.getSession();  
-		        session.setAttribute("user", user);
-				nextPage = "/views/home.jsp";
-				break;
-			}else
+		User user = dao.getUserByLoginValidation(login, password);
+		if (user != null) {
+			HttpSession session=req.getSession(); 
+			String fullName = user.getNom()+" "+user.getPrenom();
+	        session.setAttribute("user", fullName);
+			nextPage = "/views/home.jsp";
+		}else {
 				msg = "your login or password is incorrect !!!";
 		}
 		req.setAttribute("msg", msg);
 		this.getServletContext().getRequestDispatcher(nextPage).forward(req, resp);
+		
+	}
+	
+	private void checkLogout(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		System.out.println("logout");
+        HttpSession session=req.getSession(false);  
+        session.invalidate();
+        this.getServletContext().getRequestDispatcher("/views/login.jsp").forward(req, resp);
 		
 	}
 

@@ -1,6 +1,7 @@
 package com.cherradi.ensah.web;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class AnnonceController extends HttpServlet{
 	@Override
 	public void init() throws ServletException {
 		dao = new AnnonceDAOImp();
-		System.out.println("l'objet dao instancie avec success !!!");
+//		System.out.println("l'objet dao instancie avec success !!!");
 	}
 
 	
@@ -36,21 +37,77 @@ public class AnnonceController extends HttpServlet{
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String actionName = req.getServletPath();
 		switch (actionName) {
-		case "/new":
+			case "/new":
 				showNewForm(req, resp);
 				break;
 			case "/insert":
-				insertUser(req, resp);
+				insertAnnonce(req, resp);
+				break;
+			case "/delete":
+				deleteAnnonce(req, resp);
+				break;
+			case "/search":
+				searchAnnonce(req, resp);
+				break;
+			case "/edit":
+				editerAnnonce(req, resp);
+				break;
+			case "/update":
+				updateAnnonce(req, resp);
 				break;
 			default:
-				listUser(req, resp);
+				listAnnonce(req, resp);
 				break;
 		}
 		
 	}
 
 
-	private void listUser(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	private void updateAnnonce(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		// TODO Auto-generated method stub
+		Long idAnnonce = Long.parseLong(req.getParameter("id"));
+		String title = req.getParameter("titre");
+		String description = req.getParameter("content");
+		Annonce annonce = new Annonce();
+		annonce.setIdAnnonce(idAnnonce);annonce.setTitle(title); annonce.setDescription(description);annonce.setDatePublication(new Date());annonce.setPublisher("m cherradi");
+		dao.updateAnnonce(annonce);
+		resp.sendRedirect("list");
+	}
+
+
+	private void editerAnnonce(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		Long id = Long.parseLong(req.getParameter("id"));
+		Annonce annonce = dao.getAnnonceById(id);
+		req.setAttribute("annonce", annonce);
+		this.getServletContext().getRequestDispatcher("/views/editer-annonce.jsp").forward(req, resp);
+	}
+
+
+	private void searchAnnonce(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		Long id = Long.parseLong(req.getParameter("search"));
+		System.out.println(id);
+		if(id != null && id instanceof Long) {
+			Annonce annonce = dao.getAnnonceById(id);
+			List<Annonce> annonces = new ArrayList<Annonce>();
+			annonces.add(annonce);
+			req.setAttribute("listAnnonce", annonces);
+			this.getServletContext().getRequestDispatcher("/views/list-annonce.jsp").forward(req, resp);
+		}else 
+			resp.sendRedirect("list");
+	}
+
+
+	private void deleteAnnonce(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		// TODO Auto-generated method stub
+		Long id = Long.parseLong(req.getParameter("id"));
+		dao.deleteAnnonce(id);
+		resp.sendRedirect("list");
+	}
+
+
+	private void listAnnonce(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		List<Annonce> annonces = dao.getAllAnnonces();
 		req.setAttribute("listAnnonce", annonces);
@@ -58,11 +115,11 @@ public class AnnonceController extends HttpServlet{
 	}
 
 
-	private void insertUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	private void insertAnnonce(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		// TODO Auto-generated method stub
 		String title = req.getParameter("titre");
 		String description = (String)req.getParameter("content");
-		Annonce annonce = new Annonce("Location", "maison a loyer", new Date(), "Mohamed CHERRADI");
+		Annonce annonce = new Annonce(title, description, new Date(), "Mohamed CHERRADI");
 		dao.insertAnnonce(annonce);
 		resp.sendRedirect("list");
 	}

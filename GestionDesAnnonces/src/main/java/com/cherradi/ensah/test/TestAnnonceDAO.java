@@ -25,6 +25,18 @@ public class TestAnnonceDAO {
 //			System.out.println(annonce.getTitle());
 //		}
 		
+//		Annonce annonce = dao.getAnnonceById((long) 8);
+//		System.out.println(annonce.getTitle());
+		
+//		dao.deleteAnnonce((long) 1);
+		
+		Annonce annonce = dao.getAnnonceById((long) 3);
+		System.out.println(annonce.getTitle());
+		annonce.setTitle("adil");
+		boolean maj = dao.updateAnnonce(annonce);
+		System.out.println(maj);
+		System.out.println(annonce.getTitle());
+		
 	}
 
 }

@@ -24,10 +24,19 @@
 			<div class="col-md-12 offset-md-4" style="margin-left: 20px; margin-top: 100px;">
 				<div class="panel panel-info bg-info" style="background-color: #CEF6F5;">
 				  <div class="panel-body">Liste des annonces</div>
+				  <div class="panel-body">
+			  		<form action="search" method="post">
+			  			<div class="form-group">
+			  				<input type="text" name="search" class=""  placeholder="search by id"/>
+			  				<input type="submit" value="chercher" />
+			  			</div>
+			  		</form>
+				  </div>
 				  <div class="panel-footer">
 				  	<table class="table">
 				  		<thead>
 				  			<tr>
+				  				<th>#ID</th>
 					  			<th>Titre</th>
 					  			<th>Description</th>
 					  			<th>Date de publication</th>
@@ -44,9 +53,9 @@
 									<td><c:out value="${annonce.datePublication}" /></td>
 									<td><c:out value="${annonce.publisher}" /></td>
 									<td>
-										<a href="edit?id=<c:out value='${annonce.idAnnonce}' />">Edit</a>
+										<a href="edit?id=<c:out value='${annonce.idAnnonce}' />" onclick="return confirm('Etes vous sure de vouloir editer')">Edit</a>
 											&nbsp;&nbsp;&nbsp;&nbsp; 
-										<a href="delete?id=<c:out value='${annonce.idAnnonce}' />">Delete</a>
+										<a href="delete?id=<c:out value='${annonce.idAnnonce}' />" onclick="return confirm('Etes vous sure de vouloir supprimer')">Delete</a>
 									</td>
 								</tr>
 				  			</c:forEach>
